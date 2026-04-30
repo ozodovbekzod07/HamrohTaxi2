@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hamroh Taxi — Shaharlararo ishonchli hamroh</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- ===== NAVBAR ===== -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a class="logo" onclick="app.navigate('landing')">
+        <span class="logo-icon">🚕</span>
+        <span class="logo-text">Hamroh Taxi</span>
+      </a>
+      <div class="nav-links" id="nav-links"></div>
+      <div class="nav-actions">
+        <div class="lang-switcher" id="lang-switcher"></div>
+        <button class="btn btn-ghost" id="btn-theme" onclick="app.toggleTheme()">🌙</button>
+        <button class="btn btn-outline btn-sm" id="btn-login" onclick="app.navigate('login')" data-t="auth.login">Kirish</button>
+        <button class="btn btn-primary btn-sm" id="btn-register" onclick="app.navigate('login')" data-t="auth.register">Ro'yxatdan o'tish</button>
+        <button class="btn btn-outline btn-sm hidden" id="btn-logout" onclick="app.logout()" data-t="auth.logout">Chiqish</button>
+      </div>
+      <button class="mobile-menu-btn" onclick="app.toggleMobileMenu()">☰</button>
+    </div>
+  </nav>
+
+  <!-- ===== LANDING PAGE ===== -->
+  <div id="page-landing" class="page active">
+    <!-- Mode Switcher -->
+    <div class="mode-switcher-bar">
+      <div class="container">
+        <div class="mode-switcher">
+          <button class="mode-btn active" id="mode-taxi" onclick="app.switchMode('taxi')">🚕 Taxi</button>
+          <button class="mode-btn" id="mode-parcel" onclick="app.switchMode('parcel')">📦 Pochta yuborish</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAXI HERO -->
+    <section class="hero" id="hero-taxi">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <h1 data-t="home.heroTitle">Shaharlararo sayohat oson bo'ldi</h1>
+            <p class="hero-desc" data-t="home.heroDesc">O'rindiq tanlang, to'lov qiling va yo'lga chiqing. Hamroh Taxi — ishonchli sayohat hamrohi.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary btn-lg" onclick="app.navigate('passenger')" data-t="home.searchBtn">🔍 Reys qidirish</button>
+              <button class="btn btn-outline btn-lg" onclick="app.navigate('driver')" data-t="home.driverBtn">🚗 Haydovchi bo'lish</button>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="search-card">
+              <h3 data-t="passenger.whereTo">Qayerga borasiz?</h3>
+              <div class="search-row">
+                <div class="field">
+                  <label data-t="passenger.from">Qayerdan</label>
+                  <input type="text" id="hero-from" list="cities-list" placeholder="Toshkent, Samarqand...">
+                </div>
+                <div class="field">
+                  <label data-t="passenger.to">Qayerga</label>
+                  <input type="text" id="hero-to" list="cities-list" placeholder="Samarqand, Buxoro...">
+                </div>
+              </div>
+              <div class="field">
+                <label data-t="passenger.date">Qachon</label>
+                <input type="date" id="hero-date">
+              </div>
+              <datalist id="cities-list"></datalist>
+              <button class="btn btn-primary btn-block" onclick="app.searchFromHero()" data-t="passenger.search">Qidirish</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="routes-section">
+      <div class="container">
+        <h2 class="section-title">🗺️ Mashhur yo'nalishlar</h2>
+        <div class="routes-grid" id="popular-routes"></div>
+      </div>
+    </section>
+
+    <section class="steps-section">
+      <div class="container">
+        <h2 class="section-title" data-t="home.howItWorks">Qanday ishlaydi?</h2>
+        <p class="section-subtitle">4 ta oddiy qadam — va siz yo'lga chiqdingiz</p>
+        <div class="steps-grid" id="steps-grid"></div>
+      </div>
+    </section>
+
+    <section class="features-section">
+      <div class="container">
+        <h2 class="section-title" data-t="home.features">Nima uchun Hamroh Taxi?</h2>
+        <div class="features-grid" id="features-grid"></div>
+      </div>
+    </section>
+
+    <!-- PARCEL HERO -->
+    <section class="hero hidden" id="hero-parcel">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <h1>📦 Pochta yuborish oson bo'ldi</h1>
+            <p class="hero-desc">Shaharlararo pochta yuboring — tez, ishonchli va qulay narxlar. Hamroh Taxi orqali jo'natma yuboring.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary btn-lg" onclick="app.navigate('parcel')">📦 Pochta yuborish</button>
+              <button class="btn btn-outline btn-lg" onclick="app.navigate('driver')">🚗 Yetkazib berish</button>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="search-card parcel-card">
+              <h3>📦 Pochta yuborish</h3>
+              <div class="search-row">
+                <div class="field">
+                  <label>Qayerdan olish</label>
+                  <input type="text" id="parcel-hero-from" list="cities-list" placeholder="Toshkent...">
+                </div>
+                <div class="field">
+                  <label>Qayerga yetkazish</label>
+                  <input type="text" id="parcel-hero-to" list="cities-list" placeholder="Samarqand...">
+                </div>
+              </div>
+              <div class="field">
+                <label>Jo'natma turi</label>
+                <select id="parcel-hero-type">
+                  <option value="document">📄 Hujjat</option>
+                  <option value="box">📦 Quti</option>
+                  <option value="fragile">💥 Mo'rt buyum</option>
+                  <option value="food">🍽 Oziq-ovqat</option>
+                </select>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="app.startParcelFromHero()">📦 Buyurtma berish</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PARCEL STEPS -->
+    <section class="steps-section hidden" id="parcel-steps-section">
+      <div class="container">
+        <h2 class="section-title">📦 Pochta yuborish qanday ishlaydi?</h2>
+        <p class="section-subtitle">4 ta qadam — va jo'natmangiz yo'lga chiqadi</p>
+        <div class="steps-grid">
+          <div class="step-card"><div class="step-num">1</div><h3>Jo'natma ma'lumotlari</h3><p>Turi, og'irligi va hajmini kiriting</p></div>
+          <div class="step-card"><div class="step-num">2</div><h3>Manzil tanlang</h3><p>Qayerdan olish va qayerga yetkazish</p></div>
+          <div class="step-card"><div class="step-num">3</div><h3>Haydovchi toping</h3><p>Yo'nalishdagi haydovchi qabul qiladi</p></div>
+          <div class="step-card"><div class="step-num">4</div><h3>Yetkaziladi</h3><p>Kuzatish va bildirishnoma olasiz</p></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== PARCEL PAGE ===== -->
+  <div id="page-parcel" class="page">
+    <div class="container">
+      <button class="btn btn-ghost back-btn" onclick="app.navigate('landing')">← Bosh sahifa</button>
+      <div class="dashboard-header">
+        <h2>📦 Pochta yuborish</h2>
+        <span class="user-greeting" id="parcel-greeting"></span>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="app.switchParcelTab('create')">📦 Buyurtma berish</button>
+        <button class="tab" onclick="app.switchParcelTab('myorders')">📋 Mening buyurtmalarim</button>
+        <button class="tab" onclick="app.switchParcelTab('tracking')">🗺 Kuzatish</button>
+      </div>
+
+      <!-- Create Parcel Tab -->
+      <div id="tab-parcel-create" class="tab-content active">
+        <div class="parcel-form-card">
+          <h3>📦 Jo'natma ma'lumotlari</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label>Olish manzili</label>
+              <input type="text" id="parcel-from" list="cities-list4" placeholder="Toshkent, Samarqand...">
+            </div>
+            <div class="field">
+              <label>Yetkazish manzili</label>
+              <input type="text" id="parcel-to" list="cities-list4" placeholder="Samarqand, Buxoro...">
+            </div>
+            <datalist id="cities-list4"></datalist>
+            <div class="field">
+              <label>Jo'natma turi</label>
+              <select id="parcel-type">
+                <option value="document">📄 Hujjat</option>
+                <option value="box">📦 Quti</option>
+                <option value="fragile">💥 Mo'rt buyum</option>
+                <option value="food">🍽 Oziq-ovqat</option>
+                <option value="electronics">📱 Elektronika</option>
+                <option value="clothes">👕 Kiyim-kechak</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Og'irlik (kg)</label>
+              <input type="number" id="parcel-weight" placeholder="5" value="5" min="0.1" step="0.1" oninput="app.calcParcelPrice()">
+            </div>
+            <div class="field">
+              <label>Hajm (katta/kichik)</label>
+              <select id="parcel-size" oninput="app.calcParcelPrice()">
+                <option value="small">kichik (sumka)</option>
+                <option value="medium" selected>O'rta (quti)</option>
+                <option value="large">Katta (yuk)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Yetkazish vaqti</label>
+              <input type="datetime-local" id="parcel-time">
+            </div>
+            <div class="field full-width">
+              <label>Tavsif</label>
+              <textarea id="parcel-desc" rows="2" placeholder="Jo'natma haqida qo'shimcha ma'lumot..."></textarea>
+            </div>
+          </div>
+          <div class="parcel-price-estimate" id="parcel-price-estimate"></div>
+          <button class="btn btn-primary btn-lg" onclick="app.createParcelOrder()">📦 Buyurtma berish</button>
+        </div>
+      </div>
+
+      <!-- My Orders Tab -->
+      <div id="tab-parcel-myorders" class="tab-content">
+        <div id="parcel-orders-list"></div>
+        <div id="parcel-orders-empty" class="empty-state">
+          <span class="empty-icon">📦</span>
+          <p>Hali pochta buyurtmangiz yo'q</p>
+        </div>
+      </div>
+
+      <!-- Tracking Tab -->
+      <div id="tab-parcel-tracking" class="tab-content">
+        <div class="field" style="max-width:400px;margin-bottom:20px">
+          <label>Buyurtma raqami</label>
+          <input type="text" id="tracking-id-input" placeholder="p_1234567890">
+        </div>
+        <button class="btn btn-primary" onclick="app.trackParcel()">🔍 Kuzatish</button>
+        <div id="tracking-result" style="margin-top:20px"></div>
+      </div>
+    </div>
+  </div>
+  <div id="page-login" class="page">
+    <div class="container">
+      <button class="btn btn-ghost back-btn" onclick="app.navigate('landing')">← Bosh sahifa</button>
+      <div class="auth-card">
+        <div class="auth-header">
+          <span class="auth-icon">🚕</span>
+          <h2 data-t="auth.welcome">Hamroh Taxi'ga xush kelibsiz!</h2>
+        </div>
+        <!-- Step 0: Phone number check -->
+        <div id="auth-step-0">
+          <p style="text-align:center;color:var(--text2);margin-bottom:16px;">Telefon raqamingizni kiriting</p>
+          <div class="field">
+            <label data-t="auth.phonePlaceholder">Telefon raqam</label>
+            <div class="phone-input-wrap">
+              <span class="phone-prefix">+998</span>
+              <input type="tel" id="input-phone" placeholder="90 123 45 67" maxlength="12" onkeypress="if(event.key==='Enter')app.checkPhone()">
+            </div>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="app.checkPhone()">Davom etish</button>
+          <p id="phone-check-status" style="text-align:center;margin-top:12px;font-size:14px;"></p>
+        </div>
+
+        <!-- Step 1: Registration (for new users) -->
+        <div id="auth-step-1" class="hidden">
+          <div id="existing-user-banner" class="hidden" style="background:var(--success-bg);color:var(--success);padding:12px;border-radius:8px;margin-bottom:16px;text-align:center;">
+            <p>👋 Siz avval ro'yxatdan o'tgansiz!</p>
+          </div>
+          <div class="field">
+            <label data-t="auth.firstName">Ism</label>
+            <input type="text" id="input-name" placeholder="Ismingizni kiriting">
+          </div>
+          <div class="role-select" id="role-select-section">
+            <label data-t="roles.selectRole">Kim sifatida kirmoqchisiz?</label>
+            <div class="role-options three-roles">
+              <button class="role-btn active" data-role="passenger" onclick="app.selectRole('passenger')">
+                <span class="role-icon">🧑</span>
+                <span data-t="roles.passenger">Yo'lovchi</span>
+                <small data-t="roles.passengerDesc">Yo'lga chiqmoqchiman</small>
+              </button>
+              <button class="role-btn" data-role="driver" onclick="app.selectRole('driver')">
+                <span class="role-icon">🚗</span>
+                <span data-t="roles.driver">Haydovchi</span>
+                <small data-t="roles.driverDesc">Yo'lovchi tashimoqchiman</small>
+              </button>
+              <button class="role-btn" data-role="admin" onclick="app.selectRole('admin')">
+                <span class="role-icon">👑</span>
+                <span data-t="roles.admin">Admin</span>
+                <small>Tizimni boshqarish</small>
+              </button>
+            </div>
+          </div>
+          <!-- Admin parol maydoni -->
+          <div id="admin-password-field" class="field hidden">
+            <label>Admin paroli</label>
+            <input type="password" id="input-admin-password" placeholder="Admin parolini kiriting">
+            <small class="field-hint">Parol: <strong>hamroh2024</strong></small>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="app.sendOTP()" data-t="auth.sendOTP">SMS kod yuborish</button>
+        </div>
+        <div id="auth-step-2" class="hidden">
+          <p class="otp-info" data-t="auth.enterOTP">SMS kelgan kodni kiriting</p>
+          <div class="otp-inputs" id="otp-inputs">
+            <input type="text" maxlength="1" class="otp-digit" oninput="app.otpInput(this, 0)">
+            <input type="text" maxlength="1" class="otp-digit" oninput="app.otpInput(this, 1)">
+            <input type="text" maxlength="1" class="otp-digit" oninput="app.otpInput(this, 2)">
+            <input type="text" maxlength="1" class="otp-digit" oninput="app.otpInput(this, 3)">
+          </div>
+          <p class="otp-hint" id="otp-hint">Kod: <strong id="otp-code-show"></strong></p>
+          <button class="btn btn-primary btn-block" onclick="app.verifyOTP()" data-t="auth.verifyOTP">Tasdiqlash</button>
+          <button class="btn btn-ghost btn-block" onclick="app.resendOTP()" data-t="auth.resendOTP">Kodni qayta yuborish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PASSENGER PAGE ===== -->
+  <div id="page-passenger" class="page">
+    <div class="container">
+      <button class="btn btn-ghost back-btn" onclick="app.navigate('landing')">← Bosh sahifa</button>
+      <div class="dashboard-header">
+        <h2>🧑 <span data-t="passenger.title">Yo'lovchi paneli</span></h2>
+        <span class="user-greeting" id="passenger-greeting"></span>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="app.switchPassengerTab('search')" data-t="passenger.searchTrips">Reys qidirish</button>
+        <button class="tab" onclick="app.switchPassengerTab('mytrips')" data-t="passenger.myTrips">Mening reyslarim</button>
+        <button class="tab" onclick="app.switchPassengerTab('history')" data-t="passenger.tripHistory">O'tgan reyslar</button>
+        <button class="tab" onclick="app.switchPassengerTab('lostitems')">📦 Yo'qolgan buyum</button>
+      </div>
+
+      <!-- Search Tab -->
+      <div id="tab-search" class="tab-content active">
+        <div class="filter-card">
+          <div class="filter-row">
+            <div class="field">
+              <label data-t="passenger.from">Qayerdan</label>
+              <input type="text" id="search-from" list="cities-list2" placeholder="Toshkent, Samarqand...">
+            </div>
+            <div class="field">
+              <label data-t="passenger.to">Qayerga</label>
+              <input type="text" id="search-to" list="cities-list2" placeholder="Samarqand, Buxoro...">
+            </div>
+            <div class="field">
+              <label data-t="passenger.date">Sana</label>
+              <input type="date" id="search-date">
+            </div>
+            <datalist id="cities-list2"></datalist>
+            <div class="field">
+              <label data-t="filters.minPrice">Narx (dan)</label>
+              <input type="number" id="search-min-price" placeholder="0">
+            </div>
+            <div class="field">
+              <label data-t="filters.maxPrice">Narx (gacha)</label>
+              <input type="number" id="search-max-price" placeholder="500000">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="app.searchTrips()" data-t="passenger.search">🔍 Qidirish</button>
+        </div>
+        <div id="search-results" class="trips-list"></div>
+        <div id="search-empty" class="empty-state hidden">
+          <span class="empty-icon">🔍</span>
+          <p data-t="passenger.noTrips">Afsuski, bunday reys topilmadi</p>
+        </div>
+      </div>
+
+      <!-- My Trips Tab -->
+      <div id="tab-mytrips" class="tab-content">
+        <div id="my-trips-list" class="trips-list"></div>
+        <div id="my-trips-empty" class="empty-state">
+          <span class="empty-icon">📋</span>
+          <p data-t="passenger.noUpcoming">Kelgusi reyslaringiz yo'q</p>
+          <button class="btn btn-primary" onclick="app.switchPassengerTab('search')" data-t="passenger.searchNew">Yangi reys qidiring</button>
+        </div>
+      </div>
+
+      <!-- History Tab -->
+      <div id="tab-history" class="tab-content">
+        <div id="history-list" class="trips-list"></div>
+        <div id="history-empty" class="empty-state">
+          <span class="empty-icon">📜</span>
+          <p>Hali sayohat tarixi yo'q</p>
+        </div>
+      </div>
+
+      <!-- Lost Items Tab -->
+      <div id="tab-lostitems" class="tab-content">
+        <div class="lost-items-section">
+          <div class="lost-report-card">
+            <h3>📦 Yo'qolgan buyum haqida xabar berish</h3>
+            <div class="form-grid">
+              <div class="field">
+                <label>Buyum nomi</label>
+                <input type="text" id="lost-item-name" placeholder="Telefon, sumka, qalqon...">
+              </div>
+              <div class="field">
+                <label>Reys sanasi</label>
+                <input type="date" id="lost-item-date">
+              </div>
+              <div class="field">
+                <label>Haydovchi ismi</label>
+                <input type="text" id="lost-item-driver" list="drivers-list" placeholder="Haydovchi ismi...">
+              </div>
+              <datalist id="drivers-list"></datalist>
+              <div class="field full-width">
+                <label>Tavsif</label>
+                <textarea id="lost-item-desc" rows="3" placeholder="Buyumning turi, rangi, joyi va boshqa ma'lumotlar..."></textarea>
+              </div>
+              <div class="field">
+                <label>Rasm yuklash</label>
+                <input type="file" id="lost-item-photo" accept="image/*" class="file-input">
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="app.reportLostItem()">📤 Xabar yuborish</button>
+          </div>
+          <h3 style="margin-top:24px">📋 Mening xabarlarim</h3>
+          <div id="my-lostitems-list"></div>
+          <div id="my-lostitems-empty" class="empty-state">
+            <span class="empty-icon">📦</span>
+            <p>Hali yo'qolgan buyum haqida xabar bermadingiz</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SEAT SELECTION PAGE ===== -->
+  <div id="page-seat" class="page">
+    <div class="container">
+      <button class="btn btn-ghost back-btn" onclick="app.goBack()">← Orqaga</button>
+      <div class="seat-page-grid">
+        <div class="seat-map-section">
+          <h2 data-t="seats.title">🪑 O'rindiq tanlang</h2>
+          <p class="seat-hint" data-t="seats.howToSelect">Bo'sh o'rindiqni bosing va tanlang</p>
+          <div class="seat-legend">
+            <div class="legend-item"><span class="legend-box green"></span> <span data-t="seats.available">Bo'sh</span></div>
+            <div class="legend-item"><span class="legend-box blue"></span> <span data-t="seats.selected">Siz tanladingiz</span></div>
+            <div class="legend-item"><span class="legend-box gray"></span> <span data-t="seats.occupied">Band</span></div>
+            <div class="legend-item"><span class="legend-box yellow"></span> <span data-t="seats.bookingInProgress">Kimdir bron qilmoqda</span></div>
+          </div>
+          <div class="car-body" id="car-seat-map"></div>
+          <div class="selected-seats-info" id="selected-seats-info"></div>
+          <div class="manual-seat-section">
+            <p class="manual-seat-label">Yoki o'rindiq raqamini qo'lda yozing:</p>
+            <div class="manual-seat-row">
+              <input type="text" id="manual-seat-input" placeholder="2, 3, 4..." class="manual-seat-input">
+              <button class="btn btn-primary btn-sm" onclick="app.manualSeatSelect()">Tanlash</button>
+            </div>
+            <p class="simulate-hint">Vergul bilan ajrating, masalan: 3,4</p>
+          </div>
+          <div class="simulate-section">
+            <button class="btn btn-outline btn-sm" onclick="app.simulateOtherUser()">🧑‍💼 Boshqa mijoz o'rindiq band qilmoqda (simulyatsiya)</button>
+            <p class="simulate-hint">Bu tugma boshqa mijoz o'rindiq tanlayotganini ko'rsatadi — siz tanlay olmaysiz</p>
+          </div>
+        </div>
+        <div class="trip-info-section" id="seat-trip-info"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BOOKING CONFIRMATION PAGE ===== -->
+  <div id="page-booking" class="page">
+    <div class="container">
+      <button class="btn btn-ghost back-btn" onclick="app.navigate('seat')">← O'rindiq tanlash</button>
+      <div class="booking-card" id="booking-details"></div>
+    </div>
+  </div>
+
+  <!-- ===== DRIVER PAGE ===== -->
+  <div id="page-driver" class="page">
+    <div class="container">
+      <button class="btn btn-ghost back-btn" onclick="app.navigate('landing')">← Bosh sahifa</button>
+      <div class="dashboard-header">
+        <h2>🚗 <span data-t="driver.title">Haydovchi paneli</span></h2>
+        <span class="user-greeting" id="driver-greeting"></span>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="app.switchDriverTab('create')" data-t="driver.createTrip">Yangi reys yaratish</button>
+        <button class="tab" onclick="app.switchDriverTab('mytrips')" data-t="driver.myTrips">Mening reyslarim</button>
+        <button class="tab" onclick="app.switchDriverTab('earnings')" data-t="driver.earnings">Daromad</button>
+        <button class="tab" onclick="app.switchDriverTab('fuel')">⛽ Yoqilg'i kalkulyator</button>
+        <button class="tab" onclick="app.switchDriverTab('lostitems')">📦 Yo'qolgan buyumlar</button>
+        <button class="tab" onclick="app.switchDriverTab('parcels')">📮 Pochta yetkazish</button>
+      </div>
+
+      <!-- Create Trip Tab -->
+      <div id="tab-driver-create" class="tab-content active">
+        <div class="create-trip-card">
+          <div class="form-grid">
+            <div class="field">
+              <label data-t="driver.departureCity">Qayerdan jo'naysiz</label>
+              <input type="text" id="trip-from" list="cities-list3" placeholder="Toshkent, Samarqand...">
+            </div>
+            <div class="field">
+              <label data-t="driver.destinationCity">Qayerga borasiz</label>
+              <input type="text" id="trip-to" list="cities-list3" placeholder="Samarqand, Buxoro...">
+            </div>
+            <div class="field">
+              <label data-t="driver.departureTime">Jo'nash vaqti</label>
+              <input type="datetime-local" id="trip-time">
+            </div>
+            <div class="field">
+              <label data-t="driver.arrivalTime">Taxminiy yetib kelish</label>
+              <input type="datetime-local" id="trip-arrival">
+            </div>
+            <datalist id="cities-list3"></datalist>
+            <div class="field">
+              <label data-t="driver.carModel">Mashina modeli</label>
+              <input type="text" id="trip-car" placeholder="Chevrolet Lacetti" value="Chevrolet Lacetti">
+            </div>
+            <div class="field">
+              <label data-t="driver.carSeats">Necha o'rindiq</label>
+              <select id="trip-seats">
+                <option value="3">3 o'rindiq</option>
+                <option value="4" selected>4 o'rindiq</option>
+                <option value="5">5 o'rindiq</option>
+                <option value="7">7 o'rindiq</option>
+              </select>
+            </div>
+            <div class="field">
+              <label data-t="driver.setPrice">Bir o'rindiq narxi (so'm)</label>
+              <input type="number" id="trip-price" placeholder="80000" value="80000">
+            </div>
+            <div class="field">
+              <label data-t="driver.carColor">Mashina rangi</label>
+              <input type="text" id="trip-color" placeholder="Oq" value="Oq">
+            </div>
+          </div>
+          <button class="btn btn-primary btn-lg" onclick="app.createTrip()" data-t="driver.createTrip">🚗 Reys yaratish</button>
+        </div>
+      </div>
+
+      <!-- My Trips Tab -->
+      <div id="tab-driver-mytrips" class="tab-content">
+        <div id="driver-trips-list" class="trips-list"></div>
+        <div id="driver-trips-empty" class="empty-state">
+          <span class="empty-icon">🚗</span>
+          <p data-t="driver.noTrips">Hali reys yaratmadingiz</p>
+          <button class="btn btn-primary" onclick="app.switchDriverTab('create')" data-t="driver.createFirst">Birinchi reysingizni yaratish</button>
+        </div>
+      </div>
+
+      <!-- Earnings Tab -->
+      <div id="tab-driver-earnings" class="tab-content">
+        <div class="earnings-grid" id="earnings-grid"></div>
+      </div>
+
+      <!-- Fuel Calculator Tab -->
+      <div id="tab-driver-fuel" class="tab-content">
+        <div class="fuel-calc-card">
+          <h3>⛽ Yoqilg'i xarajat kalkulyatori</h3>
+          <p class="fuel-desc">Reys narxini to'g'ri belgilash uchun yoqilg'i xarajatini hisoblang</p>
+          <div class="form-grid">
+            <div class="field">
+              <label>Masofa (km)</label>
+              <input type="number" id="fuel-distance" placeholder="300" value="300" oninput="app.calcFuel()">
+            </div>
+            <div class="field">
+              <label>Yoqilg'i sarfi (1/100km)</label>
+              <input type="number" id="fuel-consumption" placeholder="8" value="8" step="0.1" oninput="app.calcFuel()">
+            </div>
+            <div class="field">
+              <label>Yoqilg'i narxi (1 litr, so'm)</label>
+              <input type="number" id="fuel-price" placeholder="8500" value="8500" oninput="app.calcFuel()">
+            </div>
+            <div class="field">
+              <label>Yo'lovchi soni</label>
+              <input type="number" id="fuel-passengers" placeholder="3" value="3" min="1" max="6" oninput="app.calcFuel()">
+            </div>
+            <div class="field">
+              <label>1 o'rindiq narxi (so'm)</label>
+              <input type="number" id="fuel-seatprice" placeholder="80000" value="80000" oninput="app.calcFuel()">
+            </div>
+          </div>
+          <div class="fuel-results" id="fuel-results"></div>
+        </div>
+      </div>
+
+      <!-- Driver Lost Items Tab -->
+      <div id="tab-driver-lostitems" class="tab-content">
+        <div id="driver-lostitems-list"></div>
+        <div id="driver-lostitems-empty" class="empty-state">
+          <span class="empty-icon">📦</span>
+          <p>Hali yo'qolgan buyum haqida xabar yo'q</p>
+        </div>
+      </div>
+
+      <!-- Driver Parcels Tab -->
+      <div id="tab-driver-parcels" class="tab-content">
+        <div id="driver-parcels-list"></div>
+        <div id="driver-parcels-empty" class="empty-state">
+          <span class="empty-icon">📮</span>
+          <p>Hali pochta yetkazish buyurtmasi yo'q</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN PAGE ===== -->
+  <div id="page-admin" class="page">
+    <div class="container">
+      <button class="btn btn-ghost back-btn" onclick="app.navigate('landing')">← Bosh sahifa</button>
+      <div class="dashboard-header">
+        <h2>👑 <span data-t="admin.title">Boshqaruv paneli</span></h2>
+      </div>
+      <div class="stats-grid" id="admin-stats"></div>
+      <div class="admin-grid">
+        <div class="admin-card">
+          <h3 data-t="admin.drivers">Haydovchilar</h3>
+          <div id="admin-drivers-list"></div>
+        </div>
+        <div class="admin-card">
+          <h3 data-t="admin.rides">Reyslar</h3>
+          <div id="admin-rides-list"></div>
+        </div>
+        <div class="admin-card">
+          <h3 data-t="admin.users">Foydalanuvchilar</h3>
+          <div id="admin-users-list"></div>
+        </div>
+        <div class="admin-card admin-card-wide">
+          <h3>📦 Yo'qolgan buyumlar</h3>
+          <div id="admin-lostitems-list"></div>
+        </div>
+        <div class="admin-card admin-card-wide">
+          <h3>📮 Pochta yetkazish</h3>
+          <div id="admin-parcels-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PROFILE SETTINGS ===== -->
+  <div id="page-profile" class="page">
+    <div class="back-btn" onclick="app.goBack()">← Orqaga</div>
+    <div class="container">
+      <h1 class="page-title">⚙️ Profil sozlamalari</h1>
+      <div class="card">
+        <div class="form-grid">
+          <div class="field full-width">
+            <label>Ism va familiya</label>
+            <input type="text" id="profile-name" placeholder="Ism familiya">
+          </div>
+          <div class="field full-width">
+            <label>Telefon raqam</label>
+            <input type="text" id="profile-phone" disabled placeholder="+998 90 123 45 67">
+          </div>
+          <div class="field full-width">
+            <label>Profil rasmi (URL)</label>
+            <input type="text" id="profile-photo" placeholder="https://...">
+          </div>
+          <div class="field full-width">
+            <label>Til / Language</label>
+            <select id="profile-lang">
+              <option value="uz">🇺🇿 O'zbekcha</option>
+              <option value="ru">🇷🇺 Русский</option>
+              <option value="en">🇬🇧 English</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top: 24px; display: flex; gap: 12px;">
+          <button class="btn btn-primary" onclick="app.saveProfile()">💾 Saqlash</button>
+          <button class="btn btn-ghost" onclick="app.goBack()">Bekor qilish</button>
+        </div>
+      </div>
+
+      <h2 class="page-title" style="margin-top: 32px;">🔒 Xavfsizlik</h2>
+      <div class="card">
+        <div class="form-grid">
+          <div class="field full-width">
+            <label>Joriy parol</label>
+            <input type="password" id="current-password" placeholder="••••••••">
+          </div>
+          <div class="field full-width">
+            <label>Yangi parol</label>
+            <input type="password" id="new-password" placeholder="••••••••">
+          </div>
+        </div>
+        <div style="margin-top: 24px;">
+          <button class="btn btn-warning" onclick="app.changePasswordHandler()">🔑 Parolni o'zgartirish</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast-container"></div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="logo"><span class="logo-icon">🚕</span> <span class="logo-text">Hamroh Taxi</span></div>
+          <p class="footer-desc">Shaharlararo ishonchli hamroh</p>
+        </div>
+        <div>
+          <h4 data-t="roles.passenger">Yo'lovchi</h4>
+          <a onclick="app.navigate('passenger')" data-t="passenger.searchTrips">Reys qidirish</a>
+          <a onclick="app.navigate('passenger')" data-t="passenger.myTrips">Mening reyslarim</a>
+        </div>
+        <div>
+          <h4 data-t="roles.driver">Haydovchi</h4>
+          <a onclick="app.navigate('driver')" data-t="driver.registerDriver">Haydovchi bo'lish</a>
+          <a onclick="app.navigate('driver')" data-t="driver.createTrip">Reys yaratish</a>
+        </div>
+        <div>
+          <h4>Aloqa</h4>
+          <p>📞 +998 90 123 45 67</p>
+          <p>📧 support@hamroh.uz</p>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2024 Hamroh Taxi. Barcha huquqlar himoyalangan.</div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
